@@ -4,41 +4,105 @@
 <title>Cross-Browser QRCode generator for Javascript</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-<script type="text/javascript" src="jquery.min.js"></script>
 <script type="text/javascript" src="qrcode.js"></script>
 </head>
 <body>
-<input id="text" type="text" value="http://jindo.dev.naver.com/collie" style="width:80%" /><br />
+<textarea id="text"  value="hello world" style="width:80%"></textarea>
+
+
 <div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
 
+<div id="box"></div>
+
+<style>
+
+	 /* Three image containers (use 25% for four, and 50% for two, etc) */
+.column {
+  float: left;
+  width: 25%;
+  padding: 10px;
+}
+
+/* Clear floats after image containers */
+#id:after {
+  content: "";
+  clear: both;
+  display: table;
+} 
+
+</style>
+
 <script type="text/javascript">
+
+var WIDTH = 200;
+var HEIGHT = 200;
+
 var qrcode = new QRCode(document.getElementById("qrcode"), {
-	width : 100,
-	height : 100
+	width : 150,
+	height : 150
 });
 
 function makeCode () {		
 	var elText = document.getElementById("text");
 	
 	if (!elText.value) {
-		alert("Input a text");
+		// alert("Input a text");
 		elText.focus();
 		return;
 	}
+
+	var textValue = elText.value
+
+	console.log("length of text: ", textValue.length);
+	// split into chunks and make multiple images if necessary
+	var CHUNK = 1000;
+
+	if (textValue.length > CHUNK) {
+
+		// amount of qrcodes
+		var numCodes = Math.ceil(textValue.length / CHUNK);
+		console.log("generating " + numCodes + " qr codes");
+
+		var qrcodesArr = [];
+
+		for (i = 0; i < textValue.length; i+=CHUNK) {
+			var qe = document.createElement("div");
+			// for column displays
+			qe.classList.add("column");
+			// qe.style.margin = "10px";
+
+			qrcodesArr.push(qrc);
+			var qrc = new QRCode(qe, {width:WIDTH, height:HEIGHT}); 
+
+			var text = textValue.slice(i, i+CHUNK);
+			console.log("length of chunk: " + text.length);
+			// console.log(qe);
+			document.getElementById("box").appendChild(qe);
+			qrc.makeCode(text);
+
+
+		}
+
+	} else {
+		qrcode.makeCode(elText.value);
+	}
 	
-	qrcode.makeCode(elText.value);
+	
 }
 
 makeCode();
 
-$("#text").
-	on("blur", function () {
+document.getElementById("text").
+	onblur = function () {
 		makeCode();
-	}).
-	on("keydown", function (e) {
+	};
+
+document.getElementById("text").onkeydown = function (e) {
 		if (e.keyCode == 13) {
 			makeCode();
 		}
-	});
+	};
+
+
 </script>
 </body>
