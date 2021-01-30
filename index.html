@@ -10,9 +10,13 @@
 <textarea id="text"  value="hello world" style="width:80%"></textarea>
 
 
-<div id="qrcode" style="width:100px; height:100px; margin-top:15px;"></div>
+<div id="qrcode" style="width:100px; height:100px; margin:5%;"></div>
 
 <div id="box"></div>
+
+
+<input type="file" />
+
 
 <style>
 
@@ -37,21 +41,39 @@
 var WIDTH = 200;
 var HEIGHT = 200;
 
+document.getElementById("qrcode").innerHTML = "";
+
 var qrcode = new QRCode(document.getElementById("qrcode"), {
 	width : 150,
 	height : 150
 });
 
-function makeCode () {		
-	var elText = document.getElementById("text");
-	
-	if (!elText.value) {
-		// alert("Input a text");
-		elText.focus();
-		return;
+
+
+async function makeCode (isFileUpload) {		
+
+
+	 var isFileUpload = (typeof isFileUpload !== 'undefined') ? isFileUpload : false;
+
+	if (!isFileUpload) {
+		var elText = document.getElementById("text");
+		
+		if (!elText.value) {
+			// alert("Input a text");
+			elText.focus();
+			return;
+		}
+
+		var textValue = elText.value;
+	} else {
+		// file upload, get file as blob
+		const input = document.querySelector('input[type="file"]');
+		var textValue =  await input.files[0].text();
+
+
 	}
 
-	var textValue = elText.value
+	
 
 	console.log("length of text: ", textValue.length);
 	// split into chunks and make multiple images if necessary
@@ -94,15 +116,18 @@ makeCode();
 
 document.getElementById("text").
 	onblur = function () {
-		makeCode();
+		makeCode(0);
 	};
 
 document.getElementById("text").onkeydown = function (e) {
 		if (e.keyCode == 13) {
-			makeCode();
+			makeCode(0);
 		}
 	};
 
 
 </script>
+
+<button onclick=makeCode(1)>QR for file</button>
+<button onclick=makeCode(0)>QR for text</button>
 </body>
