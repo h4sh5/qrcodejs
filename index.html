@@ -55,6 +55,8 @@ async function makeCode (isFileUpload) {
 
 	 var isFileUpload = (typeof isFileUpload !== 'undefined') ? isFileUpload : false;
 
+	 var textValue;
+
 	if (!isFileUpload) {
 		var elText = document.getElementById("text");
 		
@@ -64,11 +66,11 @@ async function makeCode (isFileUpload) {
 			return;
 		}
 
-		var textValue = elText.value;
+		textValue = elText.value;
 	} else {
 		// file upload, get file as blob
 		const input = document.querySelector('input[type="file"]');
-		var textValue =  await input.files[0].text();
+		textValue =  await input.files[0].text();
 
 
 	}
@@ -106,7 +108,7 @@ async function makeCode (isFileUpload) {
 		}
 
 	} else {
-		qrcode.makeCode(elText.value);
+		qrcode.makeCode(textValue);
 	}
 	
 	
